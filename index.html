@@ -1,13 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>KingdomMaps</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.css' rel='stylesheet' />
+    <meta charset="UTF-8">
+    <title>KingdomMaps</title>
+    <link rel="stylesheet" href="./css/master.css">
 </head>
 <body>
-	<footer>
-		<h1>KingdomMaps</h1>
-	</footer>
+    <div id="_timeline">
+        <center>
+            <input id="timeline" type="range" min="2" max="2016" value="2016"><br/>
+            <span id="t_year">2016</span> C.E.
+        </center>
+    </div>
+    <div id="_map">
+        <div id="map"></div>
+    </div>
+    <div id="_ipane">
+        <div id="_account">
+            <div id="out" style="display:none;">
+                <a href="./login">Sign in</a>
+            </div>
+            <div id="in" style="display:none;">
+                <a href="./account">[username]</a> (<a href="./logout">Sign out</a>)
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>KingdomMaps, (c) 2016 Liam O'Flynn</p>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="./js/index.js"></script>
 </body>
 </html>
-

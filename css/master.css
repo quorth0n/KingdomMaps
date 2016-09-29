@@ -1,0 +1,53 @@
+#_timeline {
+    position: fixed;
+    top: 0px;
+    background: lightgrey;
+    height: 50px;
+    left: 0px;
+    width: 100%;
+}
+
+#timeline {
+    position:relative;
+    top: 20%;
+    width: 80%;
+    vertical-align:middle;
+}
+
+footer {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    background: lightgrey;
+    height: 20px;
+    padding-bottom: 15px;
+    left: 0px;
+}
+
+#_map {
+    position:absolute;
+    top: 50px;
+    left:0px;
+    width:80%;
+    height:calc(100% - 50px);
+}
+
+#map {
+    width:100%;
+    height:100%;
+}
+
+#_ipane {
+    position: absolute;
+    top:50px;
+    left:80%;
+    width:calc(20% - 5px);
+    height:calc(100% - 50px);
+    background: #dedede;
+}
+
+#_account {
+    position: relative;
+    left:5px;
+    top:5px;
+}
