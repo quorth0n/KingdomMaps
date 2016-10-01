@@ -1,6 +1,5 @@
 ////    TIMELINE
 var year = 2016;
-
 var _map = {
     year: function(y) {
         year = $("#t_year").text();
@@ -66,3 +65,12 @@ mapbox.on('load', function () {
         }
     });
 });
+
+////    SITE
+if (sessionStorage.uid != undefined) {
+    $("#in").attr('style', '');
+    $("#in_uname").text('[' + sessionStorage.uname + ']');
+    $("#in_uname").attr('href', './u/?uid='+sessionStorage.uid);
+} else {
+    $("#out").attr('style', '');
+}
