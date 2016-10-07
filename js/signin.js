@@ -26,7 +26,7 @@ function goog() {
       var errorMessage = error.message;
       var email = error.email;
       var credential = error.credential;
-      /*    TODO describe better    */
+      /*    TODO:10 describe better    */
       alert('Error has occured, see console for details.');
       console.log("Error occured on signin: " + error.code + ": " + error.message);
     });
@@ -49,7 +49,7 @@ function git() {
       var errorMessage = error.message;
       var email = error.email;
       var credential = error.credential;
-      /*    TODO describe better    */
+      /*    TODO:20 describe better    */
       alert('Error has occured, see console for details.');
       console.log("Error occured on signin: " + error.code + ": " + error.message);
     });
@@ -82,5 +82,5 @@ function setupAccount(user) {
 
 function accountReady() {
     alert('Welcome. You are now signed in.');
-    ((location.search).split("=")[1] != null) ? window.location.href = (location.search).split("=")[1] : window.history.back();
+    ((location.search).split("=")[1] != null) ? window.location.href = (location.search).split("=")[1] : window.location.href = '../';
 }

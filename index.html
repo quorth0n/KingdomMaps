@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.25.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.25.1/mapbox-gl.css' rel='stylesheet' />
     <meta charset="UTF-8">
     <title>KingdomMaps</title>
     <link rel="stylesheet" href="./css/master.css">
 </head>
 <body>
+
     <div id="_timeline">
         <center>
             <input id="timeline" type="range" min="2" max="2016" value="2016"><br/>
             <span id="t_year">2016</span> C.E.
+            <?php
+                echo "test";
+            ?>
         </center>
     </div>
     <div id="_map">
         <div id="map"></div>
+        <pre id='coordinates' class='coordinates'></pre>
     </div>
     <div id="_ipane">
+        <noscript>
+            <span style="color:red;font-size:15px;">Please enable JavaScript. It is required for certain functions on this site.</span>
+        </noscript>
         <div id="_account">
             <div id="out" style="display:none;">
                 <a href="./signin">Sign in</a>
@@ -27,11 +35,43 @@
             </div>
         </div>
         <hr>
+        <div id="_edit">
+            <a href="javascript:void(0);" id="create"><img src="./img/plus-16.png"/> Create country</a><br>
+            <a href="javascript:void(0);" id="edit"><img src="./img/edit-16.png"/> Edit country</a>
+        </div>
+        <hr>
+        <div id="_tools" style="display:none;">
+            <button type="button" id="ptadd">Add point</button>
+            <button type="button" id="ptdone" disabled>Finish</button>
+            <hr>
+            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Do not include any epithets. Ex: Ireland or Spain, not Kingdom of Ireland or Spanish Empire')">[?]</a></sup> Country name: <span style="color:red;">*</span></span><input type="text" id="tname" placeholder="[required]"><br>
+            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Official name of country in local language. Ex: &Eacute;ire for Ireland or Espa&ntilde;a for Spain')">[?]</a></sup> Localized name: </span><input type="text" id="tlname" placeholder=""><br>
+            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Full known name of ruler/leading figure. Do not include any epithets. Ex: Barack Obama or Margaret Thatcher, not President Obama or Wiliam the Conquerer')">[?]</a></sup> Ruler: </span><input type="text" id="truler" placeholder="No Ruler I"><br>
+            <span>Government: </span>
+            <select id="tgov">
+                <optgroup label="Main">
+                    <option value="mon">Monarchy [Absolute]</option>
+                    <option value="const">Monarchy [Constitutional]</option>
+                    <option value="reo">Republic [Oligarchic]</option>
+                    <option value="rec">Republic [Constitutional]</option>
+                    <option value="dic">Dictatorship</option>
+                    <option value="hor">Steppe Horde</option>
+                    <option value="nat">Tribal</option>
+                </optgroup>
+                <optgroup label="Special">
+                    <option value="the">Theocracy</option>
+                    <option value="mer">Republic [Merchant]</option>
+                    <option value="soc">Socialist State</option>
+                </optgroup>
+            </select><br>
+            <span> UID: </span><input type="text" id="tid" disabled>
+        </div>
     </div>
     <footer>
-        <p>KingdomMaps, (c) 2016 Liam O'Flynn</p>
+        <p>KingdomMaps, V0.1p (c) 2016 Liam O'Flynn. <a href="./credits">Credits</a></p>
     </footer>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
     <script src="./js/index.js"></script>
 </body>
 </html>
