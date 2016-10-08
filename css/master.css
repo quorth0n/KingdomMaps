@@ -74,3 +74,20 @@ footer {
     border: 1px solid red;
     color: red;
 }
+
+#_view {
+    text-align: center;
+}
+
+.inter {
+    margin-left: 3px;
+    margin-right: 5px;
+}
+
+#vloc {
+    font-style: italic;
+}
+
+.large {
+    font-size:1.5em;
+}

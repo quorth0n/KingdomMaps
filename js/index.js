@@ -1,3 +1,4 @@
+"use strict";
 ////    INITS
 /*  Firebase  */
 var config = {
@@ -10,21 +11,22 @@ var config = {
 firebase.initializeApp(config);
 
 ////    TIMELINE
+var layerIds = [];
 var year = 2016;
 var _map = {
+    ready: function() {
+        $("#timeline").prop('disabled', false);
+        _map.year(2016);
+    },
     year: function(y) {
         year = y;
         console.log("year: " + y);
         firebase.database().ref('map').on('value', function (snapshot) {
-            //map
             snapshot.forEach(function (snap) {
-                //map/france
                 firebase.database().ref('map/' + snap.key + '/points').orderByKey().endAt(""+y).limitToLast(1).on('value', function (s) {
-                    //map/france/points/2016
                     if (s.exists()) {
                         var plo = [];
                         s.forEach(function (c) {
-                            //map/france/points/0
                             $.each(c.exportVal(), function(k, v) {
                                 var ar = $.map(v, function(value, index) {
                                     return [value];
@@ -32,14 +34,15 @@ var _map = {
                                 plo.push(ar);
                             });
                         });
-                        _map.plot(snap.key, plo);
+                        _map.plot(snap.key, plo, snap.child('hex').val());
                     }
                 });
             });
         });
     },
-    plot: function(id, p) {
+    plot: function(id, p, c) {
         console.log(p);
+        p.push(p[0]);
         var temp = {
             'type': 'geojson',
             'data': {
@@ -56,14 +59,35 @@ var _map = {
         console.log(temp);
         mapbox.addSource(id, temp);
         mapbox.addLayer({
-            'id': 'route',
+            'id': id,
             'type': 'fill',
             'source': id,
             'layout': {},
             'paint': {
-                'fill-color': '#088',
+                'fill-color': '#'+c,
                 'fill-opacity': 0.8
             }
+        });
+        layerIds.push(id);
+    },
+    click: function (e) {
+        var features = mapbox.queryRenderedFeatures(e.point, { layers: layerIds });
+        if (!features.length) {
+            return;
+        }
+
+        var feature = features[0];
+
+        _map.view(feature.properties.name);
+    },
+    view: function (c) {
+        firebase.database().ref('map/' + c).once('value').then(function (s) {
+            $("#_tools").prop('style', 'display:none;');
+            $("#_view").prop('style', '');
+            $("#vcon").text(s.child('name').val());
+            $("#vloc").text(s.child('local_name').val());
+            $("#vgov").text(s.child('gov').val());
+            $("#vrul").text(s.child('ruler').val());
         });
     }
 };
@@ -80,50 +104,13 @@ var mapbox = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/outdoors-v9'
 });
 
-//HACK remove this
-mapbox.on('load', function () {
-    mapbox.addSource('maine', {
-        'type': 'geojson',
-        'data': {
-            'type': 'Feature',
-            'properties': {
-                'name': 'Maine'
-            },
-            'geometry': {
-                'type': 'Polygon',
-                'coordinates': [[[-67.13734351262877, 45.137451890638886],
-                    [-66.96466, 44.8097],
-                    [-68.03252, 44.3252],
-                    [-69.06, 43.98],
-                    [-70.11617, 43.68405],
-                    [-70.64573401557249, 43.090083319667144],
-                    [-70.75102474636725, 43.08003225358635],
-                    [-70.79761105007827, 43.21973948828747],
-                    [-70.98176001655037, 43.36789581966826],
-                    [-70.94416541205806, 43.46633942318431],
-                    [-71.08482, 45.3052400000002],
-                    [-70.6600225491012, 45.46022288673396],
-                    [-70.30495378282376, 45.914794623389355],
-                    [-70.00014034695016, 46.69317088478567],
-                    [-69.23708614772835, 47.44777598732787],
-                    [-68.90478084987546, 47.184794623394396],
-                    [-68.23430497910454, 47.35462921812177],
-                    [-67.79035274928509, 47.066248887716995],
-                    [-67.79141211614706, 45.702585354182816],
-                    [-67.13734351262877, 45.137451890638886]]]
-            }
-        }
-    });
-    mapbox.addLayer({
-        'id': 'route',
-        'type': 'fill',
-        'source': 'maine',
-        'layout': {},
-        'paint': {
-            'fill-color': '#088',
-            'fill-opacity': 0.8
-        }
-    });
+mapbox.on('load', _map.ready);
+
+mapbox.on('click', _map.click);
+
+mapbox.on('mousemove', function (e) {
+    var features = mapbox.queryRenderedFeatures(e.point, { layers: layerIds });
+    mapbox.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 });
 
 ////    SITE
@@ -139,7 +126,7 @@ if (sessionStorage.uid != undefined) {
 var pointIds = [];
 var ptI = -1;
 var pt_geojson = {};
-var coords = {};
+var coords = [];
 
 var errs = false;
 var uid;
@@ -172,13 +159,14 @@ var _creator = {
                 //NOTE Keep revisions in root fb
             }
             $("#_tools").attr('style', '');
+            $("#_view").attr('style', 'display:none;');
         } else {
             alert('Please sign in');
         }
     },
     addPt: function() {
         if (ptI > -1) {
-            coords[Object.keys(coords).length] = Object.assign(pt_geojson[pointIds[ptI]].features[0].geometry.coordinates, {order: ptI});
+            coords.push(pt_geojson[pointIds[ptI]].features[0].geometry.coordinates);
         } else {
             $("#ptadd").text('Next point');
         }
@@ -287,9 +275,10 @@ $("#ptdone").click(function () {
             gov: $("#tgov option:selected").text(),
             u: sessionStorage.uid,
             date: new Date().toString(),
+            hex: $("#tcol").val()
         };
         if (confirm('Does this data look correct?\n' + JSON.stringify(dat))) {
-            coords[Object.keys(coords).length] = Object.assign(pt_geojson[pointIds[ptI]].features[0].geometry.coordinates, {order: ptI});
+            coords.push(pt_geojson[pointIds[ptI]].features[0].geometry.coordinates);
             firebase.database().ref('map/'+uid).set(dat);
             firebase.database().ref('map/'+uid).child('points').child(year).set(coords);
             alert('Country created!');
@@ -297,7 +286,7 @@ $("#ptdone").click(function () {
     }
 });
 
-//TODO:0 add more checks
+//TODO:0 add more checks + don't let user create country
 $("#tname").change(function () {
     if ($("#tname").val().toLowerCase().indexOf(" of ") >= 0 || $("#tname").val().toLowerCase().indexOf("king") >= 0 || $("#tname").val() == "") {
         errs = true;

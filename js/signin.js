@@ -1,3 +1,4 @@
+"use strict";
 /////    INIT
 var conf = {
   apiKey: "AIzaSyAHZ9Uo4CdEEjI_L3LUKRmnn5y8BwhccNM",

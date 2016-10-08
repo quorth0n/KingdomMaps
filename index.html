@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="./js/jscolor.min.js" charset="utf-8"></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.25.1/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.25.1/mapbox-gl.css' rel='stylesheet' />
     <meta charset="UTF-8">
@@ -40,6 +41,15 @@
             <a href="javascript:void(0);" id="edit"><img src="./img/edit-16.png"/> Edit country</a>
         </div>
         <hr>
+        <div id="_view">
+            <span id="vcon" class="large">[No country selected]</span>
+            <br>
+            "<span id="vloc">[No country selected]</span>"
+            <hr class="inter">
+            <span id="vgov"></span>
+            <hr class="inter">
+            <span id="vrul"></span>
+        </div>
         <div id="_tools" style="display:none;">
             <button type="button" id="ptadd">Add point</button>
             <button type="button" id="ptdone" disabled>Finish</button>
@@ -49,6 +59,9 @@
             <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Full known name of ruler/leading figure. Do not include any epithets. Ex: Barack Obama or Margaret Thatcher, not President Obama or Wiliam the Conquerer')">[?]</a></sup> Ruler: </span><input type="text" id="truler" placeholder="No Ruler I"><br>
             <span>Government: </span>
             <select id="tgov">
+                <optgroup label="Unknown">
+                    <option value="unk" selected>[Unknown]</option>
+                </optgroup>
                 <optgroup label="Main">
                     <option value="mon">Monarchy [Absolute]</option>
                     <option value="const">Monarchy [Constitutional]</option>
@@ -64,6 +77,8 @@
                     <option value="soc">Socialist State</option>
                 </optgroup>
             </select><br>
+            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Should not be in use by another country')">[?]</a></sup>Map color: </span>
+            <input class="jscolor" id="tcol">
             <span> UID: </span><input type="text" id="tid" disabled>
         </div>
     </div>
