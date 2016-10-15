@@ -70,12 +70,15 @@ function setupAccount(user) {
                 var n = prompt("Enter a username. This is not changeable:");
                 if (n != null && typeof n != undefined && n != "") {
                     return n;
-                }  else {
-                    getu();
+                } else {
+                    return false;
                 }
             }
             var localUname = getu();
-            db.set({uname: localUname, email: user.email});
+            if (localUname != false) {
+              db.set({uname:localUname})
+            }
+            db.set({email: user.email, showEmail: false});
             accountReady();
         }
     })
@@ -83,5 +86,5 @@ function setupAccount(user) {
 
 function accountReady() {
     alert('Welcome. You are now signed in.');
-    ((location.search).split("=")[1] != null) ? window.location.href = (location.search).split("=")[1] : window.location.href = '../';
+    ((location.search).split("=")[1] != null) ? window.location.href = (location.search).split("=")[1] : window.location.href = '../u/?uid='+sessionStorage.uid+'&edit=true';
 }

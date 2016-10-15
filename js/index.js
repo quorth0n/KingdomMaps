@@ -19,29 +19,40 @@ var _map = {
         _map.year(2016);
     },
     year: function(y) {
+      var templ = layerIds.length;
+      for (var i = 0; i < templ; i++) {
+          mapbox.removeLayer(layerIds[0]);
+          mapbox.removeSource(layerIds[0]);
+          layerIds.splice(0,1);
+      }
+      console.log(layerIds);
+      $("#tdat_s").val(y);
         year = y;
         console.log("year: " + y);
         firebase.database().ref('map').on('value', function (snapshot) {
             snapshot.forEach(function (snap) {
                 firebase.database().ref('map/' + snap.key + '/points').orderByKey().endAt(""+y).limitToLast(1).on('value', function (s) {
-                    if (s.exists()) {
+                  s.forEach(function (x) {
+                    if (x.exists() && (x.child('end').val() == undefined || x.child('end').val() == null || x.child('end').val() == false)) {
                         var plo = [];
                         s.forEach(function (c) {
                             $.each(c.exportVal(), function(k, v) {
+                              if (v != true) {
                                 var ar = $.map(v, function(value, index) {
                                     return [value];
                                 });
                                 plo.push(ar);
+                              }
                             });
                         });
                         _map.plot(snap.key, plo, snap.child('hex').val());
                     }
+                  })
                 });
             });
         });
     },
     plot: function(id, p, c) {
-        console.log(p);
         p.push(p[0]);
         var temp = {
             'type': 'geojson',
@@ -56,7 +67,6 @@ var _map = {
                 }
             }
         };
-        console.log(temp);
         mapbox.addSource(id, temp);
         mapbox.addLayer({
             'id': id,
@@ -281,7 +291,9 @@ $("#ptdone").click(function () {
             coords.push(pt_geojson[pointIds[ptI]].features[0].geometry.coordinates);
             firebase.database().ref('map/'+uid).set(dat);
             firebase.database().ref('map/'+uid).child('points').child(year).set(coords);
+            firebase.database().ref('map/'+uid).child('points').child($('#tdat_e').val()).set({end: true});
             alert('Country created!');
+            window.location.href = document.URL;
         }
     }
 });

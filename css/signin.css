@@ -1,7 +1,15 @@
-body {
-
+.main {
+  background: lightgrey;
 }
 
-.main {
-    background: lightgrey;
+#edit {
+  position: absolute;
+  right: 15px;
+  top: 25px;
+  cursor: pointer;
+}
+
+textarea {
+  width:75%;
+  height:150px;
 }
