@@ -36,7 +36,7 @@ $(document).ready(function () {
         if (!s.child('uname').exists()) {
             $('#user').html('Name: <i>none</i>');
         } else {
-            $('#user').text('Name: '+s.child('uname').val());
+            $('#user').text('Name: '+(s.child('uname').val()).trim());
         }
         about = s.child('about').val();
         if (s.child('about').exists()) {
@@ -58,7 +58,7 @@ $(document).ready(function () {
 
 $('#edit').click(function ()  {
     $(".tools").prop('style', '');
-    $('#user').html('Name: <input type="text" id="uname" value="' + ($('#user').text()).split(':')[1] + '">');
+    $('#user').html('Name: <input type="text" id="uname" value="' + (($('#user').text()).split(':')[1]).trim() + '">');
     $('#about').html('About: (<a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">markdown</a> supported)<br><textarea id="about_text">');
     if (about != null) {
       $('#about_text').val(about.replace('\\n', '\n'));
@@ -76,10 +76,11 @@ $('#cancel').click(function () {
 
 $('#save').click(function () {
     firebase.database().ref('user/' + u).set({
-        uname: $('#uname').val(),
-        about: ($('#about_text').val()).replace('\n', '\\n'),
+        uname: ($('#uname').val()).trim(),
+        //FIXME vulnerable to XSS (<img src="")
+        about: ($('#about_text').val()).replace('\n', '\\n').replace(/<(?:.|\n)*?>/gm, ''),
         showEmail: !$("#showEmail").is(':checked'),
-        email: $('#email_text').val()
+        email: ($('#email_text').val()).trim()
     });
     alert('Saved!');
     window.location.replace(document.URL.split('&')[0]);

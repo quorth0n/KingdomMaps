@@ -14,9 +14,6 @@
         <center>
             <input id="timeline" type="range" min="2" max="2016" value="2016"><br/>
             <span id="t_year">2016</span> C.E.
-            <?php
-                echo "test";
-            ?>
         </center>
     </div>
     <div id="_map">
@@ -38,10 +35,10 @@
         <hr>
         <div id="_edit">
             <a href="javascript:void(0);" id="create"><img src="./img/plus-16.png"/> Create country</a><br>
-            <a href="javascript:void(0);" id="edit"><img src="./img/edit-16.png"/> Edit country</a>
         </div>
         <hr>
         <div id="_view">
+            <a href="javascript:void(0);" id="edit" style="display:none;"><img src="./img/edit-16.png"/></a>
             <span id="vcon" class="large">[No country selected]</span>
             <br>
             "<span id="vloc">[No country selected]</span>"
@@ -54,10 +51,14 @@
             <button type="button" id="ptadd">Add point</button>
             <button type="button" id="ptdone" disabled>Finish</button>
             <hr>
-            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Do not include any epithets. Ex: Ireland or Spain, not Kingdom of Ireland or Spanish Empire')">[?]</a></sup> Country name: <span style="color:red;">*</span></span><input type="text" id="tname" placeholder="[required]"><br>
+            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('The first box is the year the nation first appeared, which is the year the timeline is currently set to. The second box is the year the country last appeared.')">[?]</a></sup> Timeframe:</span>
+            <br>
+            <input type="text" id="tdat_s" class="tdat" disabled> - <input type="text" id="tdat_e" class="tdat" value="2016">
+            <br>
+            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Do not include any epithets. Ex: Ireland or Spain, not Republic of Ireland or Spanish Empire')">[?]</a></sup> Country name: <span style="color:red;">*</span></span><input type="text" id="tname" placeholder="[required]"><br>
             <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Official name of country in local language. Ex: &Eacute;ire for Ireland or Espa&ntilde;a for Spain')">[?]</a></sup> Localized name: </span><input type="text" id="tlname" placeholder=""><br>
             <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Full known name of ruler/leading figure. Do not include any epithets. Ex: Barack Obama or Margaret Thatcher, not President Obama or Wiliam the Conquerer')">[?]</a></sup> Ruler: </span><input type="text" id="truler" placeholder="No Ruler I"><br>
-            <span>Government: </span>
+            <span><sup><a class="help hide" href="javascript:void(0);" onclick="alert('Do not include any epithets. Ex: Ireland or Spain, not Kingdom of Ireland or Spanish Empire')">[?]</a></sup> Government: </span>
             <select id="tgov">
                 <optgroup label="Unknown">
                     <option value="unk" selected>[Unknown]</option>
@@ -77,9 +78,11 @@
                     <option value="soc">Socialist State</option>
                 </optgroup>
             </select><br>
-            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Should not be in use by another country')">[?]</a></sup>Map color: </span>
-            <input class="jscolor" id="tcol">
-            <span> UID: </span><input type="text" id="tid" disabled>
+            <span><sup><a class="help" href="javascript:void(0);" onclick="alert('Should not be in use by another country')">[?]</a></sup> Map color: </span>
+            <input class="jscolor" id="tcol"><br>
+            <span><sup><a class="help hide" href="javascript:void(0);" onclick="alert('Do not include any epithets. Ex: Ireland or Spain, not Kingdom of Ireland or Spanish Empire')">[?]</a></sup> UID: </span><input type="text" id="tid" disabled>
+            <hr>
+            <center><a id="ptadd_c" href="javascript:void(0);"><i>Input custom point data</i></a></center>
         </div>
     </div>
     <footer>

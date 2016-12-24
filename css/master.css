@@ -70,6 +70,10 @@ footer {
     cursor: help !important;
 }
 
+.hide {
+    visibility: hidden;
+}
+
 .hasErr {
     border: 1px solid red;
     color: red;
@@ -89,5 +93,21 @@ footer {
 }
 
 .large {
-    font-size:1.5em;
+    font-size: 1.5em;
+    word-wrap: break-word;
+}
+
+#edit {
+  position: absolute;;
+  right: 15px;
+  z-index: 100;
+}
+
+#edit:hover {
+  border: 1px ridge grey;
+  padding: 3px;
+}
+
+.tdat {
+  width: 50px;
 }
