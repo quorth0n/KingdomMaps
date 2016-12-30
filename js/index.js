@@ -26,41 +26,69 @@ var _map = {
       mapbox.removeSource(layerIds[0]);
       layerIds.splice(0,1);
     }
-    console.log(layerIds);
     $("#tdat_s").val(y);
     year = y;
     console.log("year: " + y);
     firebase.database().ref('map').on('value', function (snapshot) {
       snapshot.forEach(function (snap) {
-        firebase.database().ref('map/' + snap.key + '/points').orderByKey().endAt(""+y).limitToLast(1).on('value', function (s) {
-          s.forEach(function (x) {
-            if (x.exists() && (x.child('end').val() == undefined || x.child('end').val() == null || x.child('end').val() == false)) {
-              var plo = [];
-              s.forEach(function (c) {
-                $.each(c.exportVal(), function(k, v) {
-                  if (v != true) {
-                    var ar = $.map(v, function(value, index) {
-                      return [value];
-                    });
-                    plo.push(ar);
-                  }
-                });
+        firebase.database().ref('map/' + snap.key + '/points').orderByKey().endAt(""+y).limitToLast(1).once('value').then(function (year_snap) {
+          console.log(Object.keys(year_snap.val())[0]);
+          firebase.database().ref('map/' + snap.key + '/points/' + Object.keys(year_snap.val())[0]).once('value').then(function (year_content_snap) {
+            console.log(year_content_snap.val());
+            year_content_snap.forEach(function (island_snap) {
+              var toPlot = [];
+              $.each(island_snap.child('0').val(), function(k, v) {
+                if (v != true) {
+                  var ar = $.map(v, function(value, index) {
+                    return [value];
+                  });
+                  toPlot.push(ar);
+                }
               });
-              _map.plot(snap.key, plo, snap.child('hex').val());
-            }
-          })
+              _map.plot(snap.key, toPlot, snap.child('hex').val());
+            });
+          });
         });
+        /*firebase.database().ref('map/' + snap.key + '/points').orderByKey().endAt(""+y).limitToLast(1).on('value', function (s) {
+          s.forEach(function (xt) {
+            xt.forEach(function (x) {
+              //xtt.forEach(function (x) {
+                alert(snap.key + '\n\n' + JSON.stringify(x.exportVal()));
+                if (x.exists() && (x.child('end').val() == undefined || x.child('end').val() == null || x.child('end').val() == false)) {
+                  var plo = [];
+                  s.forEach(function (c) {
+                    $.each(c.exportVal(), function(k, v) {
+                      if (v != true) {
+                        var ar = $.map(v[0], function(value, index) {
+                          return [value];
+                        });
+                        plo.push(ar);
+                      }
+                    });
+                  });
+                  alert(JSON.stringify(plo));
+                  _map.plot(snap.key, plo, snap.child('hex').val());
+                }
+              //});
+            });
+          });
+        });*/
       });
     });
   },
   plot: function(id, p, c) {
+    var text = "";
+    var possible = "0123456789";
+    for( var i=0; i < 10; i++ ) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
     p.push(p[0]);
     var temp = {
       'type': 'geojson',
       'data': {
         'type': 'Feature',
         'properties': {
-          'name': id
+          'name': id + text
         },
         'geometry': {
           'type': 'Polygon',
@@ -68,18 +96,18 @@ var _map = {
         }
       }
     };
-    mapbox.addSource(id, temp);
+    mapbox.addSource(id + text, temp);
     mapbox.addLayer({
-      'id': id,
+      'id': id + text,
       'type': 'fill',
-      'source': id,
+      'source': id + text,
       'layout': {},
       'paint': {
         'fill-color': '#'+c,
         'fill-opacity': 0.8
       }
     });
-    layerIds.push(id);
+    layerIds.push(id + text);
   },
   click: function (e) {
     var features = mapbox.queryRenderedFeatures(e.point, { layers: layerIds });
@@ -88,10 +116,13 @@ var _map = {
     }
 
     var feature = features[0];
-    selectC = feature.properties.name;
-    _map.view(feature.properties.name);
+    selectC = (feature.properties.name).replace(/[0-9]/g, '');
+    _map.view((feature.properties.name).replace(/[0-9]/g, ''));
   },
   view: function (c) {
+    try {
+      mapbox.removeControl(Draw);
+    } catch (e) {}
     oUid = c;
     firebase.database().ref('map/' + c).once('value').then(function (s) {
       $("#_tools").prop('style', 'display:none;');
@@ -101,6 +132,15 @@ var _map = {
       $("#vgov").text(s.child('gov').val());
       $("#vrul").text(s.child('ruler').val());
       $('#edit').prop('style', '');
+      $('#vcha').text('');
+      s.child('points').forEach(function (territory_snap) {
+        if (typeof territory_snap.val()['end'] === 'undefined' || territory_snap.val()['end'] == false) {
+          $('#vcha').append('<div class="bookmrk" onclick="$(\'#timeline\').val($(this).text());$(\'#t_year\').text($(this).text());_map.year($(\'#t_year\').text());">' + territory_snap.key + '</div>');
+        } else {
+          $('#vcha').append('<div class="bookmrk" onclick="$(\'#timeline\').val($(this).text());$(\'#t_year\').text($(this).text());_map.year($(\'#t_year\').text());">' + territory_snap.key + ' (end)</div>');
+        }
+        console.log(territory_snap.val());
+      })
     });
   }
 };
@@ -115,6 +155,16 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia213aGlyaXNoIiwiYSI6ImNpdGo4ZGdwOTA3YTkyeW8za
 var mapbox = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/outdoors-v9'
+});
+
+var Draw = new MapboxDraw({
+  controls: {
+    'point': false,
+    'line_string': false,
+    //'polygon': false,
+    'combine_features': false,
+    'uncombine_features': false
+  }
 });
 
 mapbox.on('load', _map.ready);
@@ -146,7 +196,6 @@ var errs = false;
 var uid;
 var oUid;
 
-
 var _creator = {
   makeId: function() {
     //CAUTION: only run once per point
@@ -170,6 +219,7 @@ var _creator = {
   },
   editView: function(create) {
     if (sessionStorage.uid != undefined) {
+      mapbox.addControl(Draw);
       if (!create) {
         //TODO:50 wipe map and display points for country
         //NOTE Keep revisions in root fb
@@ -296,7 +346,8 @@ $("#ptadd").click(function () {
 });
 $('#ptadd_c').click(function () {
   $("#ptdone").prop('disabled', false);
-  eCoords = JSON.parse("[" + prompt('Enter coordinate data here (as array):') + "]");
+  $("#_tools > center").html('<input type="text">')
+  //eCoords = JSON.parse("[" + prompt('Enter coordinate data here [[0, 0], [1,1]]:') + "]");
 });
 $("#ptdone").click(function () {
   if (!errs) {
@@ -319,23 +370,33 @@ $("#ptdone").click(function () {
         if (typeof eCoords == 'undefined') {
           firebase.database().ref('map/'+uid).child('points').child(year).set(coords);
         } else {
+          alert('this shouldnt happen');
           console.log(eCoords);
           firebase.database().ref('map/'+uid).child('points').child(year).set(eCoords[0]);
         }
       } else {
-        firebase.database().ref('map/'+oUid).update(dat);
         if (typeof eCoords != 'undefined') {
           if (oUid == $('#tid').val()) {
+            if ($('#tdat_e').val() != 2016) {
+              firebase.database().ref('map/'+uid).child('points').child($('#tdat_e').val()).set({end: true});
+            }
             firebase.database().ref('map/'+oUid).update(dat);
-            firebase.database().ref('map/'+oUid).child('points').child(year).set(eCoords[0][0]);
+            firebase.database().ref('map/'+oUid).child('points').child(year).set(eCoords[0]);
           } else {
+            if ($('#tdat_e').val() != 2016) {
+              firebase.database().ref('map/'+uid).child('points').child($('#tdat_e').val()).set({end: true});
+            }
             firebase.database().ref('map/'+uid).update(dat);
-            firebase.database().ref('map/'+uid).child('points').child(year).set(eCoords[0][0]);
+            firebase.database().ref('map/'+uid).child('points').child(year).set(eCoords[0]);
           }
+        } else {
+          firebase.database().ref('map/'+oUid).update(dat);
         }
       }
       alert('Country created!');
-      window.location.href = document.URL;
+      if (!(document.URL).contains('localhost')) {
+        window.location.href = document.URL;
+      }
     }
   }
 });

@@ -111,3 +111,17 @@ footer {
 .tdat {
   width: 50px;
 }
+
+.bookmrk {
+  margin-right: 5px;
+  margin-left: 18px;
+  border: 2px solid grey;
+  border-bottom-width: 0px;
+  background: #c5c5c5;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.bookmrk:last-of-type {
+  border-bottom-width: 2px;
+}
