@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>KingdomMaps</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- JS/CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– 
+  <link rel="stylesheet" href="css/normalize.css">-->
+  <link rel="stylesheet" href="/static/css/skeleton.css">
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+
+  <script type="text/javascript">
+    var nations = [];
+    {% for nation in pts %}
+      nations.push({'nationID': '{{ nation.nationID }}', 'pts': {{ nation.points }}})
+    {% endfor %}
+    console.log(nations);
+
+  </script>
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/static/img/favicon.png">
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+    <div class="row">
+      <div class="two-thirds column">
+        <div id="map" style="width:100%;height:500px;"/>
+        <script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoid2hpcmlzaCIsImEiOiJjaXVrcDJpemMwMDB0MnRtMWU4ZXpsaGVwIn0.KKh6diU1GaNmcQPaYDCyfQ';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v9',
+    center: [-68.13734351262877, 45.137451890638886],
+    zoom: 5
+});
+
+map.on('load', function () {
+  for (var i = 0; i < nations.length; i++) {
+    var poly = nations[i];
+    map.addLayer({
+        'id': 'maine',
+        'type': 'fill',
+        'source': {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Polygon',
+                    'coordinates': [poly.pts]
+                }
+            }
+        },
+        'layout': {},
+        'paint': {
+            'fill-color': '#088',
+            'fill-opacity': 0.8
+        }
+    });
+  }
+});
+</script>
+      </div>
+      <div class="one-third column">
+        <iframe src="" style="width:100%;height:100%;"></iframe>
+      </div>
+    </div>
+  </div>
+  <script src="/static/js/index.jsx" charset="utf-8"></script>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
