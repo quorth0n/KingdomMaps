@@ -1,4 +1,4 @@
 # KingdomMaps
 Official repo for KingdomMaps, an interactive timeline on the world.
 
-**NOTE:** We currently are in the process of migrating from JS/firebase to python (django)/postgres, using docker. This will greatly inprove performance and reduce hosting costs. Please see ticket #1 and the django-rewrite branch, master will not be recieving updates until we have fully switched over to django. You can find instructions to contribute in that respective branch.
+## Important: KingdomMaps will no longer be maintained. I have joined the [InteractiveMap](https://github.com/interactivemap) team and large portions of the KingdomMaps code will be merged into their existing codebase. We are always in need of contributors, feel free to help with the [frontend](https://github.com/interactivemap/frontend) or [backend](https://github.com/interactivemap/backend)! 
